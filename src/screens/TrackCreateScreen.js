@@ -1,43 +1,33 @@
-import '../_mockLocation'
-import React, { useEffect, useState, useContext } from 'react';
+import '../_mockLocation';
+import React, { useContext, useCallback } from 'react';
 import { StyleSheet, SafeAreaView } from 'react-native';
-import { Text } from 'react-native-elements'
-import { requestForegroundPermissionsAsync, watchPositionAsync, Accuracy } from 'expo-location';
+import { Text } from 'react-native-elements';
+import { withNavigationFocus } from 'react-navigation';
 import Map from '../components/Map';
-import { Context as LocationContext } from '../context/LocationContext'
+import { Context as LocationContext } from '../context/LocationContext';
+import useLocation from '../hooks/useLocation';
+import TrackForm from '../components/TrackForm';
 
-const TrackCreateScreen = () => {
-    const { addLocation } = useContext(LocationContext);
-    const [err, setErr] = useState(null);
+const TrackCreateScreen = ({ isFocused }) => {
+  const { state, addLocation } = useContext(LocationContext);
+  const callback = useCallback(
+    location => {
+      addLocation(location, state.recording);
+    },
+    [state.recording]
+  );
+  const [err] = useLocation(isFocused, callback);
 
-    const startWatching = async () => {
-        try{
-            await requestForegroundPermissionsAsync();
-            await watchPositionAsync({
-                accuracy: Accuracy.BestForNavigation,
-                timeInterval: 1000,
-                distanceInterval: 10
-            }, (location) => {
-                addLocation(location);
-            });
-        } catch (err) {
-            setErr(err);
-        }
-    };
-
-    useEffect(() => {
-        startWatching();
-    }, [])
-
-    return(
-        <SafeAreaView forceInset={{ top: 'always' }}>
-            <Text h2>Create a Track</Text>
-            <Map />
-            {err ? <Text>Please enable location services</Text> : null}
-        </SafeAreaView>
-    )
+  return (
+    <SafeAreaView forceInset={{ top: 'always' }}>
+      <Text h2>Create a Track</Text>
+      <Map />
+      {err ? <Text>Please enable location services</Text> : null}
+      <TrackForm />
+    </SafeAreaView>
+  );
 };
 
 const styles = StyleSheet.create({});
 
-export default TrackCreateScreen;
+export default withNavigationFocus(TrackCreateScreen);

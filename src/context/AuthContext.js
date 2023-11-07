@@ -30,7 +30,6 @@ const tryLocalSignin = dispatch => async () => {
 }
 
 const clearErrorMessage = dispatch => () => {
-    console.log(dispatch.type)
     dispatch({ type: 'clear_error_message' })
 };
 

@@ -12,8 +12,8 @@ const Map = () => {
   }
 
   initialLocation = {
-    longitude: -93.27854,
-    latitude: 44.98969,
+    longitude: -122.0312186,
+    latitude: 37.33233141,
   };
   
     return (
